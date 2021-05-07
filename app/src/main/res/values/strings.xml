@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Arduino_Controller_v2</string>
+    <string name="button">Connect</string>
+    <string name="ust">Выберите ваше устройство</string>
 </resources>
