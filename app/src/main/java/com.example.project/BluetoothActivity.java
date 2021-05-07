@@ -21,66 +21,41 @@ public class BluetoothActivity extends Activity {
     BluetoothAdapter bluetoothAdapter;
     ListView listView;
     ArrayAdapter<String> arrayAdapter;
-    BroadcastReceiver mReceiver;
 
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth);
         listView = (ListView) findViewById(R.id.listView);
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
-        Log.d(MAIN_LOL, "HAHAHAHAHHA");
 
-        mReceiver = new BroadcastReceiver(){
-            public void onReceive(Context context, Intent intent){
-                String action = intent.getAction();
-                // Когда найдено новое устройство
-                Log.d(MAIN_LOL, "nashel");
-                if(BluetoothDevice.ACTION_FOUND.equals(action)){
-                    // Получаем объект BluetoothDevice из интента
-                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                    //Добавляем имя и адрес в array adapter, чтобы показвать в ListView
-                    arrayAdapter.add(device.getName()+"\n"+ device.getAddress());
-                    Log.d(MAIN_LOL, "nashel");
-                    listView.setAdapter(arrayAdapter);
-                }
-            }
-        };
 
-/*
-
-        if (bluetoothAdapter.isEnabled()) {
-            // bluetooth включен
-            Log.d(MAIN_LOL,  String.valueOf(bluetoothAdapter.startDiscovery()));
-            Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
-            if(pairedDevices.size() > 0){
-                for(BluetoothDevice device: pairedDevices){
-                    arrayAdapter.add(device.getName());
-                }
-                listView.setAdapter(arrayAdapter);
-            }
-        }
-        else
-        {
-            // Предложение включить bluetooth
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-        }
-*/
-        // Регистрируем BroadcastReceiver
-        if (bluetoothAdapter.isDiscovering()){
-            Log.d(MAIN_LOL, String.valueOf(bluetoothAdapter.isDiscovering()));
-            bluetoothAdapter.cancelDiscovery();
-        }
         Log.d(MAIN_LOL, String.valueOf(bluetoothAdapter.startDiscovery()));
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        registerReceiver(mReceiver, filter);// Не забудьте снять регистрацию в onDestroy
-        listView.setAdapter(arrayAdapter);
+        registerReceiver(receiver, filter);
+        Log.d(MAIN_LOL, "ДААААААААААААААААААААААААААААААААА");
     }
 
-    public void onDestroy()
-    {
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                // Discovery has found a device. Get the BluetoothDevice
+                // object and its info from the Intent.
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                String deviceName = device.getName();
+                Log.d(MAIN_LOL, "name");
+                String deviceHardwareAddress = device.getAddress(); // MAC address
+                Log.d(MAIN_LOL, "adress");
+            }
+        }
+    };
+
+    @Override
+    protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(mReceiver);
+        // Don't forget to unregister the ACTION_FOUND receiver.
+        unregisterReceiver(receiver);
+        Log.d(MAIN_LOL, "ресивер уничтожен УРАААААААААААААА");
     }
 }
