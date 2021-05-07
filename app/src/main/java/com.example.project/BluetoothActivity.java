@@ -2,7 +2,10 @@ package com.example.project;
 
 import android.app.Activity;
 import android.bluetooth.*;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -14,13 +17,29 @@ import java.util.Set;
 public class BluetoothActivity extends Activity {
     private static final int REQUEST_ENABLE_BT = 1;
     BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    ListView listView;
+    ArrayAdapter<String> arrayAdapter;
+
+    private final BroadcastReceiver mReceiver=new BroadcastReceiver(){
+        public void onReceive(Context context, Intent intent){
+            String action= intent.getAction();
+            // Когда найдено новое устройство
+            if(BluetoothDevice.ACTION_FOUND.equals(action)){
+                // Получаем объект BluetoothDevice из интента
+                BluetoothDevice device= intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                //Добавляем имя и адрес в array adapter, чтобы показвать в ListView
+                arrayAdapter.add(device.getName()+"\n"+ device.getAddress());
+                listView.setAdapter(arrayAdapter);
+            }
+        }
+    };
 
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth);
-        ListView listView = (ListView) findViewById(R.id.listView);
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
 
+        listView = (ListView) findViewById(R.id.listView);
+        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
 
         if (bluetoothAdapter.isEnabled()) {
             // bluetooth включен
@@ -38,6 +57,16 @@ public class BluetoothActivity extends Activity {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
+
+        // Регистрируем BroadcastReceiver
+        IntentFilter filter=new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        registerReceiver(mReceiver, filter);// Не забудьте снять регистрацию в onDestroy
+        listView.setAdapter(arrayAdapter);
     }
 
+    public void onDestroy()
+    {
+        super.onDestroy();
+        unregisterReceiver(mReceiver);
+    }
 }
