@@ -1,8 +1,8 @@
-package com.example.arduino_controller_v2;
+package com.example.project;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
+import com.example.arduino_controller_v2.R;
 
 public class MainActivity extends AppCompatActivity {
 
