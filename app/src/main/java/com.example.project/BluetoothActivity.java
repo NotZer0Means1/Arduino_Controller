@@ -45,6 +45,16 @@ public class BluetoothActivity extends Activity {
             Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(intent, RESULT_OK);
         }
+
+        if ( !bluetoothAdapter.isDiscovering() ){
+            bluetoothAdapter.startDiscovery();
+        }
+
+        if ( bluetoothAdapter.isDiscovering() ) {
+            bluetoothAdapter.cancelDiscovery();
+            bluetoothAdapter.startDiscovery();
+        }
+
         IntentFilter filter = new IntentFilter();
 
         filter.addAction(BluetoothDevice.ACTION_FOUND);
@@ -53,13 +63,6 @@ public class BluetoothActivity extends Activity {
 
         registerReceiver(mReceiver, filter);
 
-        bt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(LOL, "Кнопка");
-                bluetoothAdapter.startDiscovery();
-            }
-        });
 
     }
 
@@ -68,7 +71,7 @@ public class BluetoothActivity extends Activity {
             super.onDestroy();
     }
 
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
