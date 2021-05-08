@@ -28,7 +28,7 @@ public class BluetoothActivity extends Activity {
     BluetoothAdapter bluetoothAdapter;
     private ArrayList<String> mDevices = new ArrayList<>();
     private ArrayAdapter<String> arrayAdapter;
-    private Set<String> devices;
+    private Set<BluetoothDevice> devices;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +45,11 @@ public class BluetoothActivity extends Activity {
             Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(intent, RESULT_OK);
         }
+        devices = bluetoothAdapter.getBondedDevices();
+        for ( BluetoothDevice bd: devices ){
+            arrayAdapter.add(bd.getName());
+        }
+        listView.setAdapter(arrayAdapter);
 
         if ( !bluetoothAdapter.isDiscovering() ){
             bluetoothAdapter.startDiscovery();
@@ -75,7 +80,6 @@ public class BluetoothActivity extends Activity {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-
 
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 Log.d(LOL, "ресивер");
