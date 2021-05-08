@@ -11,54 +11,80 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.example.arduino_controller_v2.R;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class BluetoothActivity extends Activity {
     private static final String LOL = "MAIN_LOL";
 
     Button bt;
+    ListView listView;
     BluetoothAdapter bluetoothAdapter;
-    BroadcastReceiver mReceiver;
+    private ArrayList<String> mDevices = new ArrayList<>();
+    private ArrayAdapter<String> arrayAdapter;
+    private Set<String> devices;
 
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth);
+
         Log.d(LOL, "CJPLFYJ");
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         bt = findViewById(R.id.button);
+        listView = findViewById(R.id.listView);
 
+        arrayAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1);
 
-        mReceiver = new BroadcastReceiver(){
-            public void onReceive(Context context, Intent intent)
-            {
-                String action = intent.getAction();
-                Log.d(LOL, "nachalo");
-                if(BluetoothDevice.ACTION_FOUND.equals(action))
-                {
-                    Log.d(LOL, "nashel");
-                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                    Log.d(LOL, device.getName());
-                }
-            }
-        };
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if( !bluetoothAdapter.isEnabled() ){
+            Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(intent, RESULT_OK);
+        }
         IntentFilter filter = new IntentFilter();
 
-
+        filter.addAction(BluetoothDevice.ACTION_FOUND);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-        filter.addAction(BluetoothDevice.ACTION_FOUND);
+
         registerReceiver(mReceiver, filter);
-        bluetoothAdapter.startDiscovery();
+
+        bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(LOL, "Кнопка");
+                bluetoothAdapter.startDiscovery();
+            }
+        });
 
     }
 
-    public void onDestroy()
-    {
-        unregisterReceiver(mReceiver);
-        super.onDestroy();
+     public void onDestroy () {
+            unregisterReceiver(mReceiver);
+            super.onDestroy();
     }
+
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+
+
+            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                Log.d(LOL, "ресивер");
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                if ( !mDevices.contains(device.getName()) ) {
+                    mDevices.add(device.getName());
+                    arrayAdapter.add(device.getName());
+                    Log.d(LOL, device.getName());
+                }
+                listView.setAdapter(arrayAdapter);
+            }
+
+        }
+    };
 }
