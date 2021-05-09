@@ -93,22 +93,12 @@ public class BluetoothActivity extends Activity {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            if( lastClickId != -1 && lastClickId != position ){
-                parent.getChildAt(lastClickId).setBackgroundResource(R.color.white);
-                view.setBackgroundResource(R.color.white);
-            }
-            if ( lastClickId == -1 ){
-                view.setBackgroundResource(R.color.white);
-            }
-            lastClickId = position;
+
         }
+
 
     };
 
-
-    public static int getCurrentSelectedItemId(){
-        return lastClickId;
-    }
 
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
