@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
 
     <TextView
         android:id="@+id/ust"
@@ -20,7 +21,11 @@
         app:layout_constraintVertical_bias="0.153" />
 
     <ListView
+        android:background="@drawable/state_selector"
         android:id="@+id/listView"
+        android:divider="@color/black"
+        android:choiceMode="singleChoice"
+        android:dividerHeight="0dp"
         android:layout_width="234dp"
         android:layout_height="388dp"
         app:layout_constraintBottom_toBottomOf="parent"
