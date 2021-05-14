@@ -19,6 +19,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.UUID;
 import androidx.annotation.RequiresApi;
@@ -31,6 +33,8 @@ import java.util.Set;
 
 public class BluetoothActivity extends Activity {
     private static final String MAIN_LOL = "MAIN_LOL";
+
+    Method method;
 
     private Button bt_search;
     private ListView listView;
@@ -50,7 +54,8 @@ public class BluetoothActivity extends Activity {
     final int RECIEVE_MESSAGE = 1;        // Статус для Handler
     private StringBuilder sb = new StringBuilder();
     private static String mac_adress;
-    private static final UUID myUUID = UUID.fromString("5fe57aa0-b1a6-11eb-8529-0242ac130003");
+    //private static final UUID myUUID = UUID.fromString("5fe57aa0-b1a6-11eb-8529-0242ac130003");
+    private static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private String device_adress;
 
     private BluetoothThread bluetoothThread;
@@ -105,8 +110,8 @@ public class BluetoothActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String device_name = (String) listView.getItemAtPosition(position);
                 Log.d(MAIN_LOL, "Choice device: " + device_name);
-                if(position > arrayOfSavedAdress.size()){
-                    device_adress = arrayOfAvailableAdress.get(position - arrayOfSavedAdress.size() - 1);
+                if(position >= arrayOfSavedAdress.size()){
+                    device_adress = arrayOfAvailableAdress.get(position - arrayOfSavedAdress.size());
                     Log.d(MAIN_LOL, "index: " + device_adress);
                 }
                 else{
@@ -143,14 +148,13 @@ public class BluetoothActivity extends Activity {
                     Toast toast = Toast.makeText(getApplicationContext(), "Поиск устройств", Toast.LENGTH_SHORT);
                     toast.show();
                     BluetoothDevice device = (BluetoothDevice) intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                    Log.d(MAIN_LOL, String.valueOf(device.getName()));
+                    //Log.d(MAIN_LOL, String.valueOf(device.getName()));
                     if ( !devices.contains(device.getName()) && device.getName() != null) {
                         devices.add(device.getName());
-                        arrayAdapterAvailableName.add(device.getName());
+                        arrayAdapterSavedName.add(device.getName());
                         arrayOfAvailableAdress.add(device.getAddress());
-                        bDevices.add(device);
                         Log.d(MAIN_LOL, "conjugate " + device.getName() + " adress " + device.getAddress());
-                        listView.setAdapter(arrayAdapterAvailableName);
+                        listView.setAdapter(arrayAdapterSavedName);
                     }
                 }
                 if(BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action))
@@ -174,11 +178,17 @@ public class BluetoothActivity extends Activity {
         registerReceiver(mReceiver, filter);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         registerReceiver(mReceiver, filter);
+
         //=================================================================================================================================================
     }
 
     //_________________________________________________________________________________________________________________________________________________________
     public void onDestroy() {
+        try     {
+            btSocket.close();
+        } catch (IOException e2) {
+            errorExit("Fatal Error", "In onDestroy() and failed to close socket." + e2.getMessage() + ".");
+        }
         unregisterReceiver(mReceiver);
         super.onDestroy();
     }
@@ -196,48 +206,7 @@ public class BluetoothActivity extends Activity {
         }
     }
     //_________________________________________________________________________________________________________________________________________________________
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        Log.d(MAIN_LOL, "...onResume - попытка соединения...");
-
-        // Set up a pointer to the remote node using it's address.
-        BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(mac_adress);
-
-        // Two things are needed to make a connection:
-        //   A MAC address, which we got above.
-        //   A Service ID or UUID.  In this case we are using the
-        //     UUID for SPP.
-        try {
-            btSocket = device.createRfcommSocketToServiceRecord(myUUID);
-        } catch (IOException e) {
-            errorExit("Fatal Error", "In onResume() and socket create failed: " + e.getMessage() + ".");
-        }
-
-        // Discovery is resource intensive.  Make sure it isn't going on
-        // when you attempt to connect and pass your message.
-        mBluetoothAdapter.cancelDiscovery();
-
-        // Establish the connection.  This will block until it connects.
-        Log.d(MAIN_LOL, "...Соединяемся...");
-        try {
-            btSocket.connect();
-            Log.d(MAIN_LOL, "...Соединение установлено и готово к передачи данных...");
-        } catch (IOException e) {
-            try {
-                btSocket.close();
-            } catch (IOException e2) {
-                errorExit("Fatal Error", "In onResume() and unable to close socket during connection failure" + e2.getMessage() + ".");
-            }
-        }
-
-        // Create a data stream so we can talk to server.
-        Log.d(MAIN_LOL, "...Создание Socket...");
-
-        bluetoothThread = new BluetoothThread(btSocket);
-        bluetoothThread.start();
-    }
+    //Здесь был onResume() здоровья погибшим
     //_________________________________________________________________________________________________________________________________________________________
     @Override
     public void onPause() {
@@ -245,11 +214,6 @@ public class BluetoothActivity extends Activity {
 
         Log.d(MAIN_LOL, "...In onPause()...");
 
-        try     {
-            btSocket.close();
-        } catch (IOException e2) {
-            errorExit("Fatal Error", "In onPause() and failed to close socket." + e2.getMessage() + ".");
-        }
     }
     //_________________________________________________________________________________________________________________________________________________________
     private void checkBTState() {
@@ -275,15 +239,21 @@ public class BluetoothActivity extends Activity {
     //_________________________________________________________________________________________________________________________________________________________
     private class BluetoothConnectThread extends Thread{
         private BluetoothConnectThread(BluetoothDevice device) {
-
-            try {
-                btSocket = device.createRfcommSocketToServiceRecord(myUUID);
+            if (mBluetoothAdapter.isDiscovering()) {
+                mBluetoothAdapter.cancelDiscovery();
             }
-
-            catch (IOException e) {
+            try {
+                method = device.getClass().getMethod("createRfcommSocket", new Class[] {int.class});
+                btSocket = (BluetoothSocket) method.invoke(device, 1);
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
                 e.printStackTrace();
             }
         }
+
         @Override
         public void run() { // Коннект
             boolean success = false;
@@ -298,7 +268,8 @@ public class BluetoothActivity extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(BluetoothActivity.this, "Нет коннекта, проверьте Bluetooth-устройство с которым хотите соединица!", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(BluetoothActivity.this, "Нет коннекта, проверьте Bluetooth-устройство с которым хотите соединица!", Toast.LENGTH_LONG).show();
+                        Log.d(MAIN_LOL, "НЕТ КОННЕКТА ЧТО ТЫ ХОЧЕШЬ");
                         //listViewPairedDevice.setVisibility(View.VISIBLE);
                     }
                 });
@@ -315,7 +286,7 @@ public class BluetoothActivity extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ;
+                        Log.d(MAIN_LOL, "ЕСТЬ КОННЕКТ ЧТО ТЫ ХОЧЕШЬ");
                     }
                 });
 
