@@ -15,7 +15,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Arduino_Controller_v2">
-        <activity android:name="com.example.project.BluetoothActivity">
+        <activity android:name="com.example.project.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
