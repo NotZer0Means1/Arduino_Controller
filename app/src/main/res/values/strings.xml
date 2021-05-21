@@ -4,4 +4,6 @@
     <string name="ust">Выберите ваше устройство</string>
     <string name="pole">Выберите старый пульт или создайте новый</string>
     <string name="creator">Создать новый пульт</string>
+    <string name="button_creator">Создать кнопку</string>
+    <string name="textView_creator">Создать текстовое поле</string>
 </resources>

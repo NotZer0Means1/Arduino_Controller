@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/button_creator"
+        android:title="@string/button_creator">
+    </item>
+
+    <item android:id="@+id/textView_creator"
+        android:title="@string/textView_creator">
+    </item>
+
+</menu>
