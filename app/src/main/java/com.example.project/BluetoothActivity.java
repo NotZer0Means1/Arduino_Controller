@@ -51,14 +51,10 @@ public class BluetoothActivity extends Activity {
     private BroadcastReceiver mReceiver;
     // for chat between devices
     private static final int REQUEST_ENABLE_BT = 1;
-    final int RECIEVE_MESSAGE = 1;        // Статус для Handler
-    private StringBuilder sb = new StringBuilder();
     private static String mac_adress;
-    //private static final UUID myUUID = UUID.fromString("5fe57aa0-b1a6-11eb-8529-0242ac130003");
-    private static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private String device_adress;
 
-    private BluetoothThread bluetoothThread;
+
 
     //_________________________________________________________________________________________________________________________________________________________
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -76,24 +72,6 @@ public class BluetoothActivity extends Activity {
         arrayOfAvailableAdress = new ArrayList<>();
         devices = new ArrayList();
         mac_adress = mBluetoothAdapter.getAddress(); // mac-adress нашего устройства
-        //=================================================================================================================================================
-        h = new Handler() {
-            public void handleMessage(android.os.Message msg) {
-                switch (msg.what) {
-                    case RECIEVE_MESSAGE:                                                   // если приняли сообщение в Handler
-                        byte[] readBuf = (byte[]) msg.obj;
-                        String strIncom = new String(readBuf, 0, msg.arg1);
-                        sb.append(strIncom);                                                // формируем строку
-                        int endOfLineIndex = sb.indexOf("\r\n");                            // определяем символы конца строки
-                        if (endOfLineIndex > 0) {                                            // если встречаем конец строки,
-                            String sbprint = sb.substring(0, endOfLineIndex);               // то извлекаем строку
-                            sb.delete(0, sb.length());                                      // и очищаем sb
-                        }
-                        Log.d(MAIN_LOL, "...Строка:"+ sb.toString() +  "Байт:" + msg.arg1 + "...");
-                        break;
-                }
-            };
-        };
         //=================================================================================================================================================
         checkBTState(); // проверка работоспособности bluetooth
         //=================================================================================================================================================
@@ -307,61 +285,7 @@ public class BluetoothActivity extends Activity {
     }
 
     //_________________________________________________________________________________________________________________________________________________________
-    private class BluetoothThread extends Thread{
-        private final InputStream mmInStream;
-        private final OutputStream mmOutStream;
-        final int RECIEVE_MESSAGE = 1;
 
-        public BluetoothThread(BluetoothSocket socket) {
-            btSocket = socket;
-            InputStream tmpIn = null;
-            OutputStream tmpOut = null;
-
-            // Get the input and output streams, using temp objects because
-            // member streams are final
-            try {
-                tmpIn = socket.getInputStream();
-                tmpOut = socket.getOutputStream();
-            } catch (IOException e) { }
-
-            mmInStream = tmpIn;
-            mmOutStream = tmpOut;
-        }
-
-        public void run() {
-            byte[] buffer = new byte[256];  // buffer store for the stream
-            int bytes; // bytes returned from read()
-
-            // Keep listening to the InputStream until an exception occurs
-            while (true) {
-                try {
-                    // Read from the InputStream
-                    bytes = mmInStream.read(buffer);        // Получаем кол-во байт и само собщение в байтовый массив "buffer"
-                    h.obtainMessage(RECIEVE_MESSAGE, bytes, -1, buffer).sendToTarget();     // Отправляем в очередь сообщений Handler
-                } catch (IOException e) {
-                    break;
-                }
-            }
-        }
-
-        /* Call this from the main activity to send data to the remote device */
-        public void write(String message) {
-            Log.d(MAIN_LOL, "...Данные для отправки: " + message + "...");
-            byte[] msgBuffer = message.getBytes();
-            try {
-                mmOutStream.write(msgBuffer);
-            } catch (IOException e) {
-                Log.d(MAIN_LOL, "...Ошибка отправки данных: " + e.getMessage() + "...");
-            }
-        }
-
-        /* Call this from the main activity to shutdown the connection */
-        public void cancel() {
-            try {
-                btSocket.close();
-            } catch (IOException e) { }
-        }
-    }
 }
 
 

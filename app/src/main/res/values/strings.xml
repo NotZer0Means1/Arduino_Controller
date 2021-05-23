@@ -4,6 +4,15 @@
     <string name="ust">Выберите ваше устройство</string>
     <string name="pole">Выберите старый пульт или создайте новый</string>
     <string name="creator">Создать новый пульт</string>
-    <string name="button_creator">Создать кнопку</string>
-    <string name="textView_creator">Создать текстовое поле</string>
+    <string name="button_creator">кнопка</string>
+    <string name="textView_creator">текстовое поле</string>
+    <string name="editText_creator">Поле для ввода текста</string>
+    <string name="create">Create</string>
+    <string name="clear">clear</string>
+    <string name="Name">Введите имя для объекта</string>
+    <string name="Save">Save</string>
+    <string name="Get">Get</string>
+    <string name="Send">Send</string>
+    <string name="end">End</string>
+
 </resources>
