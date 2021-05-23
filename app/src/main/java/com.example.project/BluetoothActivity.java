@@ -264,7 +264,11 @@ public class BluetoothActivity extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+
                         Log.d(MAIN_LOL, "ЕСТЬ КОННЕКТ ЧТО ТЫ ХОЧЕШЬ");
+
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(intent);
                     }
                 });
 

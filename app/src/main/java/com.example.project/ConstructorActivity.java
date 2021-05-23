@@ -2,8 +2,11 @@ package com.example.project;
 
 import android.annotation.SuppressLint;
 
+import android.content.Intent;
 import android.os.Bundle;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -61,187 +64,166 @@ public class ConstructorActivity extends AppCompatActivity implements View.OnCli
 
         saveBt = findViewById(R.id.saveButton);
         saveBt.setOnClickListener(this);
-
         btnCreate = findViewById(R.id.btnCreate);
         btnCreate.setOnClickListener(this);
-
         btnClear = findViewById(R.id.btnClear);
         btnClear.setOnClickListener(this);
     }
 
 
-    @SuppressLint({"ClickableViewAccessibility", "NonConstantResourceId", "RtlHardcoded"})
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.btnCreate:
-                // Создание LayoutParams c шириной и высотой по содержимому
-                LinearLayout.LayoutParams lParams = new LinearLayout.LayoutParams(wrapContent, wrapContent);
-                // переменная для хранения значения выравнивания
-                int btnGravity = Gravity.LEFT;
+        @SuppressLint({"ClickableViewAccessibility", "NonConstantResourceId", "RtlHardcoded"})
+        @Override
+        public void onClick(View v) {
+                switch (v.getId()) {
+                    case R.id.btnCreate:
+                        // Создание LayoutParams c шириной и высотой по содержимому
+                        LinearLayout.LayoutParams lParams = new LinearLayout.LayoutParams(wrapContent, wrapContent);
+                        // переменная для хранения значения выравнивания
+                        int btnGravity = Gravity.LEFT;
 
-                switch (Creators.getCheckedRadioButtonId()) {
-                    case R.id.crButton:
+                        switch (Creators.getCheckedRadioButtonId()) {
+                            case R.id.crButton:
 
-                        btnGravity = Gravity.LEFT;
-                        Button btnNew = new Button(this);
-                        btnNew.setText(String.valueOf(Name.getText()));
-                        llMain.addView(btnNew, lParams);
+                                btnGravity = Gravity.LEFT;
+                                Button btnNew = new Button(this);
+                                btnNew.setText(String.valueOf(Name.getText()));
+                                llMain.addView(btnNew, lParams);
 
 
-                        btnNew.setOnTouchListener(new View.OnTouchListener() {
-                            @Override
-                            public boolean onTouch(View v, MotionEvent event) {
-                                final int x = (int) event.getRawX();
-                                final int y = (int) event.getRawY();
-                                switch (event.getAction() & MotionEvent.ACTION_MASK) {
-                                    case MotionEvent.ACTION_DOWN: {
-                                        LinearLayout.LayoutParams laParams = (LinearLayout.LayoutParams) v.getLayoutParams();
+                                btnNew.setOnTouchListener(new View.OnTouchListener() {
+                                    @Override
+                                    public boolean onTouch(View v, MotionEvent event) {
+                                        final int x = (int) event.getRawX();
+                                        final int y = (int) event.getRawY();
+                                        switch (event.getAction() & MotionEvent.ACTION_MASK) {
+                                            case MotionEvent.ACTION_DOWN: {
+                                                LinearLayout.LayoutParams laParams = (LinearLayout.LayoutParams) v.getLayoutParams();
 
-                                        xDelta = x - laParams.leftMargin;
-                                        yDelta = y - laParams.topMargin;
-                                        break;
+                                                xDelta = x - laParams.leftMargin;
+                                                yDelta = y - laParams.topMargin;
+                                                break;
+                                            }
+                                            case MotionEvent.ACTION_UP: {
+                                                Toast.makeText(getApplicationContext(), "Объект пермещен", Toast.LENGTH_SHORT).show();
+                                                break;
+                                            }
+                                            case MotionEvent.ACTION_MOVE: {
+                                                LinearLayout.LayoutParams layoutParams =
+                                                        (LinearLayout.LayoutParams) v.getLayoutParams();
+                                                layoutParams.leftMargin = x - xDelta;
+                                                layoutParams.topMargin = y - yDelta;
+                                                layoutParams.rightMargin = 0;
+                                                layoutParams.bottomMargin = 0;
+                                                v.setLayoutParams(layoutParams);
+                                                view = v;
+                                                break;
+                                            }
+                                        }
+                                        return true;
                                     }
-                                    case MotionEvent.ACTION_UP: {
-                                        Toast.makeText(getApplicationContext(), "Объект пермещен", Toast.LENGTH_SHORT).show();
-                                        break;
-                                    }
-                                    case MotionEvent.ACTION_MOVE: {
-                                        LinearLayout.LayoutParams layoutParams =
-                                                (LinearLayout.LayoutParams) v.getLayoutParams();
-                                        layoutParams.leftMargin = x - xDelta;
-                                        layoutParams.topMargin = y - yDelta;
-                                        layoutParams.rightMargin = 0;
-                                        layoutParams.bottomMargin = 0;
-                                        v.setLayoutParams(layoutParams);
-                                        view = v;
-                                        break;
-                                    }
-                                }
-                                return true;
-                            }
-                        });
+                                });
 
+                                break;
+
+
+                            case R.id.crTextView:
+                                btnGravity = Gravity.LEFT;
+                                TextView txt = new TextView(this);
+                                txt.setHint(String.valueOf(Name.getText()));
+                                llMain.addView(txt, lParams);
+
+                                txt.setOnTouchListener(new View.OnTouchListener() {
+                                    @Override
+                                    public boolean onTouch(View v, MotionEvent event) {
+                                        final int x = (int) event.getRawX();
+                                        final int y = (int) event.getRawY();
+                                        switch (event.getAction() & MotionEvent.ACTION_MASK) {
+                                            case MotionEvent.ACTION_DOWN: {
+                                                LinearLayout.LayoutParams laParams = (LinearLayout.LayoutParams) v.getLayoutParams();
+
+                                                xDelta = x - laParams.leftMargin;
+                                                yDelta = y - laParams.topMargin;
+                                                break;
+                                            }
+                                            case MotionEvent.ACTION_UP: {
+                                                Toast.makeText(getApplicationContext(), "Объект пермещен", Toast.LENGTH_SHORT).show();
+                                                break;
+                                            }
+                                            case MotionEvent.ACTION_MOVE: {
+                                                LinearLayout.LayoutParams layoutParams =
+                                                        (LinearLayout.LayoutParams) v.getLayoutParams();
+                                                layoutParams.leftMargin = x - xDelta;
+                                                layoutParams.topMargin = y - yDelta;
+                                                layoutParams.rightMargin = 0;
+                                                layoutParams.bottomMargin = 0;
+                                                v.setLayoutParams(layoutParams);
+                                                view = v;
+                                                break;
+                                            }
+                                        }
+                                        return true;
+                                    }
+                                });
+
+                                break;
+                            case R.id.crEditText:
+                                btnGravity = Gravity.LEFT;
+                                EditText etxt = new EditText(this);
+                                etxt.setHint(String.valueOf(Name.getText()));
+                                llMain.addView(etxt, lParams);
+
+                                etxt.setOnTouchListener(new View.OnTouchListener() {
+                                    @Override
+                                    public boolean onTouch(View v, MotionEvent event) {
+                                        final int x = (int) event.getRawX();
+                                        final int y = (int) event.getRawY();
+                                        switch (event.getAction() & MotionEvent.ACTION_MASK) {
+                                            case MotionEvent.ACTION_DOWN: {
+                                                LinearLayout.LayoutParams laParams = (LinearLayout.LayoutParams) v.getLayoutParams();
+
+                                                xDelta = x - laParams.leftMargin;
+                                                yDelta = y - laParams.topMargin;
+                                                break;
+                                            }
+                                            case MotionEvent.ACTION_UP: {
+                                                Toast.makeText(getApplicationContext(), "Объект пермещен", Toast.LENGTH_SHORT).show();
+                                                break;
+                                            }
+                                            case MotionEvent.ACTION_MOVE: {
+                                                LinearLayout.LayoutParams layoutParams =
+                                                        (LinearLayout.LayoutParams) v.getLayoutParams();
+                                                layoutParams.leftMargin = x - xDelta;
+                                                layoutParams.topMargin = y - yDelta;
+                                                layoutParams.rightMargin = 0;
+                                                layoutParams.bottomMargin = 0;
+                                                v.setLayoutParams(layoutParams);
+                                                view = v;
+                                                break;
+                                            }
+                                        }
+                                        return true;
+                                    }
+                                });
+                                break;
+                        }
+                        // переносим полученное значение выравнивания в LayoutParams
+                        lParams.gravity = btnGravity;
                         break;
 
-
-                    case R.id.crTextView:
-                        btnGravity = Gravity.LEFT;
-                        TextView txt = new TextView(this);
-                        txt.setHint(String.valueOf(Name.getText()));
-                        llMain.addView(txt, lParams);
-
-                        txt.setOnTouchListener(new View.OnTouchListener() {
-                            @Override
-                            public boolean onTouch(View v, MotionEvent event) {
-                                final int x = (int) event.getRawX();
-                                final int y = (int) event.getRawY();
-                                switch (event.getAction() & MotionEvent.ACTION_MASK) {
-                                    case MotionEvent.ACTION_DOWN: {
-                                        LinearLayout.LayoutParams laParams = (LinearLayout.LayoutParams) v.getLayoutParams();
-
-                                        xDelta = x - laParams.leftMargin;
-                                        yDelta = y - laParams.topMargin;
-                                        break;
-                                    }
-                                    case MotionEvent.ACTION_UP: {
-                                        Toast.makeText(getApplicationContext(), "Объект пермещен", Toast.LENGTH_SHORT).show();
-                                        break;
-                                    }
-                                    case MotionEvent.ACTION_MOVE: {
-                                        LinearLayout.LayoutParams layoutParams =
-                                                (LinearLayout.LayoutParams) v.getLayoutParams();
-                                        layoutParams.leftMargin = x - xDelta;
-                                        layoutParams.topMargin = y - yDelta;
-                                        layoutParams.rightMargin = 0;
-                                        layoutParams.bottomMargin = 0;
-                                        v.setLayoutParams(layoutParams);
-                                        view = v;
-                                        break;
-                                    }
-                                }
-                                return true;
-                            }
-                        });
-
+                    case R.id.btnClear: {
+                        llMain.removeAllViews();
+                        Toast.makeText(this, "Удалено", Toast.LENGTH_SHORT).show();
                         break;
-                    case R.id.crEditText:
-                        btnGravity = Gravity.LEFT;
-                        EditText etxt = new EditText(this);
-                        etxt.setHint(String.valueOf(Name.getText()));
-                        llMain.addView(etxt, lParams);
+                    }
+                    case R.id.saveButton: {
+                        MyObject myObj = new MyObject(llMain);
+                        Intent intent = new Intent(this, Pult.class);
+                        intent.putExtra(MyObject.class.getCanonicalName(), myObj);
+                        startActivity(intent);
+                    }
 
-                        etxt.setOnTouchListener(new View.OnTouchListener() {
-                            @Override
-                            public boolean onTouch(View v, MotionEvent event) {
-                                final int x = (int) event.getRawX();
-                                final int y = (int) event.getRawY();
-                                switch (event.getAction() & MotionEvent.ACTION_MASK) {
-                                    case MotionEvent.ACTION_DOWN: {
-                                        LinearLayout.LayoutParams laParams = (LinearLayout.LayoutParams) v.getLayoutParams();
-
-                                        xDelta = x - laParams.leftMargin;
-                                        yDelta = y - laParams.topMargin;
-                                        break;
-                                    }
-                                    case MotionEvent.ACTION_UP: {
-                                        Toast.makeText(getApplicationContext(), "Объект пермещен", Toast.LENGTH_SHORT).show();
-                                        break;
-                                    }
-                                    case MotionEvent.ACTION_MOVE: {
-                                        LinearLayout.LayoutParams layoutParams =
-                                                (LinearLayout.LayoutParams) v.getLayoutParams();
-                                        layoutParams.leftMargin = x - xDelta;
-                                        layoutParams.topMargin = y - yDelta;
-                                        layoutParams.rightMargin = 0;
-                                        layoutParams.bottomMargin = 0;
-                                        v.setLayoutParams(layoutParams);
-                                        view = v;
-                                        break;
-                                    }
-                                }
-                                return true;
-                            }
-                        });
-                        break;
                 }
-                // переносим полученное значение выравнивания в LayoutParams
-                lParams.gravity = btnGravity;
-                break;
-
-            case R.id.btnClear: {
-                llMain.removeAllViews();
-                Toast.makeText(this, "Удалено", Toast.LENGTH_SHORT).show();
-                break;
-            }
-            case R.id.saveButton:{
-
-                dbf = DocumentBuilderFactory.newInstance();
-                try {
-                    db  = dbf.newDocumentBuilder();
-                } catch (ParserConfigurationException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    doc = db.parse(new File("activity_constructor.xml"));
-                } catch (IOException | SAXException e) {
-                    e.printStackTrace();
-                }
-                NodeList nodeList = doc.getElementsByTagName("saveButton");
-                Log.d(LOL, String.valueOf(nodeList));
-                break;
-            }
-
-        }
-    }
-    private static String getNode(String sTag, Element eElement) {
-        NodeList nlList = eElement.getElementsByTagName(sTag).item(0)
-                .getChildNodes();
-        Node nValue = (Node) nlList.item(0);
-        if(nValue!=null)
-        {
-            return nValue.getNodeValue();
-        }
-        return "null";
-    }
+            };
 
 }
+

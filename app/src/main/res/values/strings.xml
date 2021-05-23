@@ -14,5 +14,6 @@
     <string name="Get">Get</string>
     <string name="Send">Send</string>
     <string name="end">End</string>
+    <string name="nameOfController">Введите имя пульта</string>
 
 </resources>

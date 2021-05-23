@@ -47,6 +47,9 @@ public class Pult extends Activity {
 
         etxt = findViewById(R.id.etext1);
 
+        MyObject myObject = (MyObject) getIntent().getParcelableExtra(MyObject.class.getCanonicalName());
+
+
         thread = new BluetoothThread(btSocket);
         thread.start();
 

@@ -1,0 +1,137 @@
+@startuml
+class com.example.project.MainActivity {
+- {static} String LOL
+~ Button create
+~ Spinner spinner
+- ArrayAdapter<String> remoteControllers
+# void onCreate(Bundle)
++ void showDialog(View)
++ void applyTexts(String)
+}
+class com.example.project.ConstructorActivity {
+- {static} String LOL
+- android.widget.LinearLayout.LayoutParams layoutParams
+- LinearLayout container
+- LinearLayout llMain
+- RadioGroup Creators
+- EditText Name
+- Button btnCreate
+- int xDelta
+- int flag
+- View view
+- int wrapContent
+- DocumentBuilderFactory dbf
+- DocumentBuilder db
+- Document doc
++ {static} Parcelable.Creator<Object> CREATOR
+# void onCreate(Bundle)
++ int describeContents()
++ void writeToParcel(Parcel,int)
+}
+class com.example.project.CustomDialogFragment {
+~ String name
+- EditText editText
+- DialogListener listener
++ Dialog onCreateDialog(Bundle)
++ void onAttach(Context)
+}
+interface com.example.project.CustomDialogFragment.DialogListener {
+~ void applyTexts(String)
+}
+class com.example.arduino_controller_v2.ExampleUnitTest {
++ void addition_isCorrect()
+}
+class com.example.project.DataBase {
+- Button bt_new
+- Button bt_old
+- EditText txt_login
+- EditText txt_password
+- {static} String MAIN_LOL
+- {static} String DATABASE_NAME
+- {static} int DATABASE_VERSION
+- {static} String TABLE_NAME
+- {static} String COLUMN_ID
+- {static} String COLUMN_LOGIN
+- {static} String COLUMN_PASSWORD
+- {static} int NUM_COLUMN_ID
+- {static} int NUM_COLUMN_LOGIN
+- {static} int NUM_COLUMN_PASSWORD
+- SQLiteDatabase sqLiteDatabase
+# void onCreate(Bundle)
+}
+class com.example.project.DataBase.openHelper {
++ void onCreate(SQLiteDatabase)
++ void onUpgrade(SQLiteDatabase,int,int)
+}
+class com.example.project.BluetoothActivity {
+- {static} String MAIN_LOL
+~ Method method
+- Button bt_search
+- ListView listView
+- ArrayAdapter<String> arrayAdapterSavedName
+- ArrayAdapter<String> arrayAdapterAvailableName
+- ArrayList<String> arrayOfSavedAdress
+- ArrayList<String> arrayOfAvailableAdress
+- ArrayList devices
+- Set<BluetoothDevice> bDevices
+- Handler h
+- BluetoothAdapter mBluetoothAdapter
+- BluetoothSocket btSocket
+- BroadcastReceiver mReceiver
+- {static} int REQUEST_ENABLE_BT
+- {static} String mac_adress
+- String device_adress
+# void onCreate(Bundle)
++ void onDestroy()
+- void checkPermissionLocation()
++ void onPause()
+- void checkBTState()
+- void errorExit(String,String)
+}
+class com.example.project.BluetoothActivity.BluetoothConnectThread {
++ void run()
++ void cancel()
+}
+class com.example.arduino_controller_v2.ExampleInstrumentedTest {
++ void useAppContext()
+}
+class com.example.project.Pult {
+- {static} String MAIN_LOL
+- BluetoothSocket btSocket
+- Handler h
+~ int RECIEVE_MESSAGE
+- StringBuilder sb
+- Button bt1
+- TextView txt1
+- EditText etxt
+- String message
+- BluetoothThread thread
+- String sbprint
+# void onCreate(Bundle)
+}
+class com.example.project.Pult.BluetoothThread {
+- InputStream mmInStream
+- OutputStream mmOutStream
+~ int RECIEVE_MESSAGE
++ void run()
++ void write(String)
++ void cancel()
+}
+
+
+com.example.project.DialogListener <|.. com.example.project.MainActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.project.MainActivity
+android.os.Parcelable <|.. com.example.project.ConstructorActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.project.ConstructorActivity
+androidx.appcompat.app.AppCompatDialogFragment <|-- com.example.project.CustomDialogFragment
+com.example.project.CustomDialogFragment +.. com.example.project.CustomDialogFragment.DialogListener
+android.app.Activity <|-- com.example.project.DataBase
+com.example.project.DataBase +.. com.example.project.DataBase.openHelper
+com.example.project.SQLiteOpenHelper <|-- com.example.project.DataBase.openHelper
+android.app.Activity <|-- com.example.project.BluetoothActivity
+com.example.project.BluetoothActivity +.. com.example.project.BluetoothActivity.BluetoothConnectThread
+com.example.project.Thread <|-- com.example.project.BluetoothActivity.BluetoothConnectThread
+android.app.Activity <|-- com.example.project.Pult
+com.example.project.Pult +.. com.example.project.Pult.BluetoothThread
+com.example.project.Thread <|-- com.example.project.Pult.BluetoothThread
+@enduml

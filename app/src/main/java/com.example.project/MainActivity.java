@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -40,6 +41,8 @@ public class MainActivity extends AppCompatActivity implements CustomDialogFragm
             public void onClick(View v) {
                 showDialog(v);
                 Log.d(LOL, "Переход на активность создания пульта");
+                Intent intent = new Intent(getApplicationContext(), ConstructorActivity.class);
+                startActivity(intent);
             }
         };
         //spinner.setAdapter(remoteControllers);

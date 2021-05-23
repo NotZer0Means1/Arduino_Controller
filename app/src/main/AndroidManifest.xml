@@ -13,14 +13,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Arduino_Controller_v2">
-        <activity android:name="com.example.project.Pult"></activity>
-        <activity android:name="com.example.project.ConstructorActivity">
+        <activity android:name="com.example.project.DataBase">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="com.example.project.BluetoothActivity"></activity>
+        <activity android:name="com.example.project.ConstructorActivity"></activity>
+        <activity android:name="com.example.project.Pult"></activity>
+        <activity android:name="com.example.project.MainActivity"></activity>
+
     </application>
 
 </manifest>
